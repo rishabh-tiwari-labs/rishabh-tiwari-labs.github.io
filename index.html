@@ -1,0 +1,910 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Rishabh Tiwari | ECE Engineer</title>
+  <meta name="description" content="Portfolio of Rishabh Tiwari, Electronics & Communication Engineering student from Rewa, Madhya Pradesh." />
+
+  <!-- Fonts (the site still works offline: system fonts are used as fallback) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
+
+  <!-- Set the theme BEFORE the page paints, so there is no light/dark flash.
+       Order: saved choice -> system preference -> light. -->
+  <script>
+    (function () {
+      var saved = null;
+      try { saved = localStorage.getItem('theme'); } catch (e) {}
+      var dark = saved ? saved === 'dark'
+                       : window.matchMedia('(prefers-color-scheme: dark)').matches;
+      document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
+      document.documentElement.classList.add('js'); // lets CSS know JS is running
+    })();
+  </script>
+
+  <style>
+    /* =====================================================================
+       1. THEME COLORS  (edit these to re-skin the whole site)
+       ===================================================================== */
+    :root {
+      --bg:        #f6f7f4;   /* page background            */
+      --surface:   #ffffff;   /* cards                      */
+      --surface-2: #eceee9;   /* tags, subtle fills         */
+      --text:      #14201d;   /* main text                  */
+      --muted:     #5b6964;   /* secondary text             */
+      --line:      #d9ddd6;   /* borders                    */
+      --accent:    #0b7a66;   /* links, buttons, highlights */
+      --accent-ink:#ffffff;   /* text on top of accent      */
+      --accent-soft: rgba(11, 122, 102, 0.10);
+      --shadow: 0 1px 2px rgba(20, 32, 29, .05), 0 8px 24px rgba(20, 32, 29, .06);
+
+      --font-body: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+      --font-head: 'Space Grotesk', var(--font-body);
+      --font-mono: 'JetBrains Mono', ui-monospace, Consolas, monospace;
+
+      --nav-h: 64px;
+      --radius: 14px;
+      --max-w: 1080px;
+    }
+
+    [data-theme="dark"] {
+      --bg:        #0b1114;
+      --surface:   #121a1e;
+      --surface-2: #1a252a;
+      --text:      #e6efec;
+      --muted:     #93a39e;
+      --line:      #233036;
+      --accent:    #3ddbb4;
+      --accent-ink:#06231c;
+      --accent-soft: rgba(61, 219, 180, 0.12);
+      --shadow: 0 1px 2px rgba(0, 0, 0, .3), 0 8px 24px rgba(0, 0, 0, .25);
+    }
+
+    /* =====================================================================
+       2. BASE / RESET
+       ===================================================================== */
+    *, *::before, *::after { box-sizing: border-box; }
+
+    html {
+      scroll-behavior: smooth;                        /* smooth scrolling */
+      scroll-padding-top: calc(var(--nav-h) + 16px);  /* don't hide headings under the sticky nav */
+    }
+
+    body {
+      margin: 0;
+      font-family: var(--font-body);
+      font-size: 16px;
+      line-height: 1.65;
+      color: var(--text);
+      background: var(--bg);
+      -webkit-font-smoothing: antialiased;
+      transition: background-color .25s ease, color .25s ease;
+    }
+
+    h1, h2, h3 { font-family: var(--font-head); line-height: 1.15; margin: 0; text-wrap: balance; }
+    p { margin: 0; }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    ul { list-style: none; margin: 0; padding: 0; }
+    svg { display: block; }
+
+    :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 6px; }
+
+    .container { width: 100%; max-width: var(--max-w); margin: 0 auto; padding: 0 20px; }
+
+    section { padding: 84px 0; }
+
+    /* Small monospace label above each section title, e.g. "01 / about" */
+    .eyebrow {
+      font-family: var(--font-mono);
+      font-size: 13px;
+      color: var(--accent);
+      letter-spacing: .04em;
+      margin-bottom: 10px;
+    }
+    .section-title { font-size: clamp(28px, 4vw, 38px); letter-spacing: -.02em; margin-bottom: 36px; }
+
+    /* =====================================================================
+       3. BUTTONS, TAGS, CARDS (shared pieces)
+       ===================================================================== */
+    .btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 12px 20px;
+      border-radius: 10px;
+      border: 1px solid transparent;
+      font: 600 15px var(--font-body);
+      cursor: pointer;
+      transition: transform .15s ease, background-color .2s ease, border-color .2s ease;
+    }
+    .btn:hover { text-decoration: none; transform: translateY(-2px); }
+    .btn-primary { background: var(--accent); color: var(--accent-ink); }
+    .btn-ghost   { background: transparent; color: var(--text); border-color: var(--line); }
+    .btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
+
+    .tags { display: flex; flex-wrap: wrap; gap: 8px; }
+    .tag {
+      padding: 6px 12px;
+      border-radius: 999px;
+      background: var(--surface-2);
+      border: 1px solid var(--line);
+      font-size: 14px;
+      font-weight: 500;
+    }
+    .tag-mono { font-family: var(--font-mono); font-size: 12px; color: var(--muted); padding: 4px 10px; }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 24px;
+      box-shadow: var(--shadow);
+      transition: transform .2s ease, border-color .2s ease;
+    }
+    .card:hover { transform: translateY(-4px); border-color: var(--accent); }
+
+    /* =====================================================================
+       4. NAVIGATION (sticky)
+       ===================================================================== */
+    .nav {
+      position: sticky; top: 0; z-index: 50;
+      height: var(--nav-h);
+      background: color-mix(in srgb, var(--bg) 82%, transparent);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--line);
+    }
+    .nav-inner { height: 100%; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+
+    .logo { font: 700 20px var(--font-head); color: var(--text); letter-spacing: -.02em; }
+    .logo span { color: var(--accent); }
+    .logo:hover { text-decoration: none; }
+
+    .nav-links { display: flex; align-items: center; gap: 4px; }
+    .nav-links a {
+      display: block; padding: 8px 12px; border-radius: 8px;
+      color: var(--muted); font-size: 15px; font-weight: 500;
+    }
+    .nav-links a:hover { color: var(--text); text-decoration: none; }
+    .nav-links a.active { color: var(--accent); background: var(--accent-soft); }
+
+    .nav-actions { display: flex; align-items: center; gap: 8px; }
+    .icon-btn {
+      width: 40px; height: 40px;
+      display: grid; place-items: center;
+      background: transparent; color: var(--text);
+      border: 1px solid var(--line); border-radius: 10px;
+      cursor: pointer;
+    }
+    .icon-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .icon-btn svg { width: 18px; height: 18px; }
+
+    /* Show the sun in dark mode and the moon in light mode */
+    .icon-sun { display: none; }
+    [data-theme="dark"] .icon-sun  { display: block; }
+    [data-theme="dark"] .icon-moon { display: none; }
+
+    .menu-btn { display: none; }
+
+    /* Mobile navigation: links become a drop-down panel */
+    @media (max-width: 820px) {
+      .menu-btn { display: grid; }
+      .nav-links {
+        position: absolute; top: var(--nav-h); left: 0; right: 0;
+        flex-direction: column; align-items: stretch; gap: 0;
+        padding: 8px 20px 16px;
+        background: var(--bg);
+        border-bottom: 1px solid var(--line);
+        display: none;
+      }
+      .nav-links.open { display: flex; }
+      .nav-links a { padding: 12px; }
+    }
+
+    /* =====================================================================
+       5. HERO
+       ===================================================================== */
+    .hero { position: relative; padding: 96px 0 120px; overflow: hidden; }
+
+    /* Animated signal line drawn by JS (see "HERO SIGNAL" in the script) */
+    #signal { position: absolute; left: 0; bottom: 0; width: 100%; height: 150px; opacity: .8; pointer-events: none; }
+
+    .hero-grid { position: relative; display: grid; grid-template-columns: 1fr auto; gap: 48px; align-items: center; }
+
+    .hero h1 { font-size: clamp(42px, 8vw, 76px); letter-spacing: -.035em; margin-bottom: 18px; }
+    .hero h1 span { color: var(--accent); }
+
+    /* Tagline items separated by small dots */
+    .tagline { display: flex; flex-wrap: wrap; gap: 6px 14px; font-family: var(--font-mono); font-size: 15px; color: var(--muted); margin-bottom: 22px; }
+    .tagline li + li::before { content: "•"; color: var(--accent); margin-right: 14px; }
+
+    .hero-intro { max-width: 54ch; color: var(--muted); font-size: 18px; margin-bottom: 30px; }
+    .hero-cta { display: flex; flex-wrap: wrap; gap: 12px; }
+
+    /* Profile photo placeholder. To use a real photo, see the HTML comment in the hero. */
+    .avatar {
+      width: 240px; height: 240px;
+      border-radius: 28px;
+      display: grid; place-items: center;
+      background:
+        linear-gradient(var(--accent-soft), var(--accent-soft)),
+        repeating-linear-gradient(0deg,  transparent 0 23px, var(--line) 23px 24px),
+        repeating-linear-gradient(90deg, transparent 0 23px, var(--line) 23px 24px),
+        var(--surface);
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+      font: 700 72px var(--font-head);
+      color: var(--accent);
+      letter-spacing: -.04em;
+      overflow: hidden;
+    }
+    .avatar img { width: 100%; height: 100%; object-fit: cover; }
+
+    @media (max-width: 820px) {
+      .hero { padding: 56px 0 110px; }
+      .hero-grid { grid-template-columns: 1fr; gap: 32px; }
+      .avatar { width: 128px; height: 128px; border-radius: 20px; font-size: 40px; order: -1; }
+    }
+
+    /* =====================================================================
+       6. ABOUT
+       ===================================================================== */
+    .about-grid { display: grid; grid-template-columns: 1.5fr 1fr; gap: 32px; align-items: start; }
+    .about-text p + p { margin-top: 14px; }
+    .about-text { font-size: 17px; }
+
+    .facts { display: grid; gap: 14px; }
+    .facts li { display: flex; gap: 12px; align-items: flex-start; }
+    .facts svg { width: 18px; height: 18px; color: var(--accent); margin-top: 4px; flex: none; }
+    .facts small { display: block; font-family: var(--font-mono); font-size: 12px; color: var(--muted); }
+
+    @media (max-width: 820px) { .about-grid { grid-template-columns: 1fr; } }
+
+    /* =====================================================================
+       7. EDUCATION (timeline)
+       ===================================================================== */
+    .timeline { position: relative; display: grid; gap: 20px; padding-left: 28px; }
+    .timeline::before { content: ""; position: absolute; left: 6px; top: 8px; bottom: 8px; width: 2px; background: var(--line); }
+    .timeline-item { position: relative; }
+    .timeline-item::before {
+      content: ""; position: absolute; left: -28px; top: 28px;
+      width: 14px; height: 14px; border-radius: 50%;
+      background: var(--bg); border: 3px solid var(--accent);
+    }
+    .edu-head { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 6px 16px; margin-bottom: 4px; }
+    .edu-head h3 { font-size: 19px; }
+    .edu-meta { font-family: var(--font-mono); font-size: 13px; color: var(--accent); white-space: nowrap; }
+    .edu-school { color: var(--muted); }
+
+    /* =====================================================================
+       8. SKILLS
+       ===================================================================== */
+    .skills-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; }
+    .skills-grid h3 { font-size: 16px; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+    .skills-grid h3::before { content: ""; width: 8px; height: 8px; border-radius: 2px; background: var(--accent); }
+
+    /* =====================================================================
+       9. PROJECTS
+       ===================================================================== */
+    .projects-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
+    .project { display: flex; flex-direction: column; gap: 12px; }
+    .project-num { font-family: var(--font-mono); font-size: 13px; color: var(--accent); }
+    .project h3 { font-size: 20px; }
+    .project p { color: var(--muted); font-size: 15px; flex: 1; }
+    .project-link { font-weight: 600; font-size: 15px; }
+
+    /* =====================================================================
+       10. INTERESTS
+       ===================================================================== */
+    .interests-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 16px; }
+    .interest { text-align: center; padding: 24px 16px; }
+    .interest-icon { font-size: 34px; line-height: 1; margin-bottom: 12px; transition: transform .25s ease; }
+    .interest:hover .interest-icon { transform: scale(1.2) rotate(-6deg); }
+    .interest h3 { font-size: 16px; }
+
+    /* =====================================================================
+       11. CONTACT
+       ===================================================================== */
+    .contact-grid { display: grid; grid-template-columns: 1fr 1.2fr; gap: 32px; align-items: start; }
+    .contact-lead { color: var(--muted); font-size: 17px; margin-bottom: 24px; }
+    .contact-list { display: grid; gap: 14px; }
+    .contact-list a, .contact-list span.row {
+      display: flex; align-items: center; gap: 14px;
+      color: var(--text); font-weight: 500; overflow-wrap: anywhere;
+    }
+    .contact-list .ic {
+      width: 42px; height: 42px; flex: none;
+      display: grid; place-items: center;
+      border-radius: 10px; background: var(--accent-soft); color: var(--accent);
+    }
+    .contact-list .ic svg { width: 18px; height: 18px; }
+
+    form { display: grid; gap: 14px; }
+    label { display: grid; gap: 6px; font-size: 14px; font-weight: 500; }
+    input, textarea {
+      width: 100%;
+      padding: 12px 14px;
+      font: inherit; font-weight: 400; color: var(--text);
+      background: var(--bg);
+      border: 1px solid var(--line); border-radius: 10px;
+    }
+    input:focus, textarea:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+    textarea { min-height: 130px; resize: vertical; }
+    .form-note { font-size: 13px; color: var(--muted); }
+    .card.form-card:hover { transform: none; border-color: var(--line); }
+
+    @media (max-width: 820px) { .contact-grid { grid-template-columns: 1fr; } }
+
+    /* =====================================================================
+       12. FOOTER
+       ===================================================================== */
+    footer { border-top: 1px solid var(--line); padding: 28px 0; }
+    .footer-inner { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px; color: var(--muted); font-size: 14px; }
+    .socials { display: flex; gap: 8px; }
+    .socials a { text-decoration: none; }
+
+    /* =====================================================================
+       13. SCROLL-REVEAL ANIMATION
+       Only active when JS is running (".js" on <html>), so content is
+       never hidden if the script fails to load.
+       ===================================================================== */
+    .js .reveal { opacity: 0; transform: translateY(18px); transition: opacity .6s ease, transform .6s ease; }
+    .js .reveal.visible { opacity: 1; transform: none; }
+
+    /* Respect users who turn animations off in their system settings */
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      *, *::before, *::after { transition: none !important; animation: none !important; }
+      .js .reveal { opacity: 1; transform: none; }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- ===================================================================
+       NAVIGATION BAR (sticky)
+       To add a section: add a link here + a <section id="..."> below.
+       =================================================================== -->
+  <header class="nav">
+    <div class="container nav-inner">
+      <a href="#top" class="logo">RT<span>.</span></a>
+
+      <nav aria-label="Main">
+        <ul class="nav-links" id="navLinks">
+          <li><a href="#about">About</a></li>
+          <li><a href="#education">Education</a></li>
+          <li><a href="#skills">Skills</a></li>
+          <li><a href="#projects">Projects</a></li>
+          <li><a href="#interests">Interests</a></li>
+          <li><a href="#contact">Contact</a></li>
+        </ul>
+      </nav>
+
+      <div class="nav-actions">
+        <!-- Light / dark mode toggle -->
+        <button class="icon-btn" id="themeToggle" aria-label="Switch between light and dark mode">
+          <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+          <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+        </button>
+        <!-- Hamburger button (only visible on mobile) -->
+        <button class="icon-btn menu-btn" id="menuBtn" aria-label="Open menu" aria-expanded="false" aria-controls="navLinks">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main id="top">
+
+    <!-- =================================================================
+         HERO
+         ================================================================= -->
+    <section class="hero">
+      <canvas id="signal" aria-hidden="true"></canvas>
+
+      <div class="container hero-grid">
+        <div>
+          <p class="eyebrow">Hello, I'm</p>
+          <h1>Rishabh <span>Tiwari</span></h1>
+
+          <!-- EDIT: tagline items -->
+          <ul class="tagline">
+            <li>VLSI Student</li>
+            <li>ECE Engineer</li>
+            <li>IoT Enthusiast</li>
+          </ul>
+
+          <!-- EDIT: one-line intro under the tagline -->
+          <p class="hero-intro">
+            Electronics &amp; Communication Engineering student from Rewa, working
+            across signal processing, optical wireless communication and software.
+          </p>
+
+          <div class="hero-cta">
+            <a class="btn btn-primary" href="#projects">View my projects</a>
+            <a class="btn btn-ghost" href="#contact">Get in touch</a>
+            <!-- RESUME BUTTON: put your PDF next to this file (e.g. resume.pdf),
+                 then remove the comment markers around the line below.
+            <a class="btn btn-ghost" href="resume.pdf" download>Download Resume</a>
+            -->
+          </div>
+        </div>
+
+        <!-- PROFILE PHOTO PLACEHOLDER
+             To use a real photo, replace the letters "RT" below with:
+             <img src="photo.jpg" alt="Rishabh Tiwari" />
+             (put photo.jpg in the same folder as this file) -->
+        <div class="avatar" aria-label="Profile photo placeholder">RT</div>
+      </div>
+    </section>
+
+    <!-- =================================================================
+         ABOUT
+         ================================================================= -->
+    <section id="about">
+      <div class="container">
+        <p class="eyebrow">01 / about</p>
+        <h2 class="section-title">About me</h2>
+
+        <div class="about-grid">
+          <!-- EDIT: your bio. This is a starter written from your details;
+               replace it with your own words and what you're looking for. -->
+          <div class="about-text reveal">
+            <p>
+              I'm an Electronics &amp; Communication Engineering student at Rewa
+              Engineering College with a strong interest in VLSI and IoT.
+            </p>
+            <p>
+              My project work sits where hardware meets signals: sending data over
+              light with Li-Fi, cancelling noise with adaptive filters in MATLAB, and
+              detecting edges in images with the Sobel operator.
+            </p>
+            <p>
+              Alongside electronics, I build software with Spring Boot, Angular and
+              MySQL, which lets me take an idea from circuit to screen.
+            </p>
+          </div>
+
+          <ul class="card facts reveal">
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-6.2-7-11a7 7 0 0 1 14 0c0 4.800-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>
+              <div><small>LOCATION</small>Rewa, Madhya Pradesh, India</div>
+            </li>
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 9l10-5 10 5-10 5z"/><path d="M6 11.500V16c0 1.500 2.700 3 6 3s6-1.500 6-3v-4.500"/></svg>
+              <div><small>STUDYING</small>B.Tech, Electronics &amp; Communication</div>
+            </li>
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="7" width="10" height="10" rx="1.500"/><path d="M10 3v4M14 3v4M10 17v4M14 17v4M3 10h4M3 14h4M17 10h4M17 14h4"/></svg>
+              <div><small>FOCUS</small>VLSI, signal processing, IoT</div>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- =================================================================
+         EDUCATION
+         Copy a whole <li class="timeline-item"> block to add an entry.
+         ================================================================= -->
+    <section id="education">
+      <div class="container">
+        <p class="eyebrow">02 / education</p>
+        <h2 class="section-title">Education</h2>
+
+        <ul class="timeline">
+          <li class="timeline-item card reveal">
+            <div class="edu-head">
+              <h3>B.Tech in Electronics &amp; Communication Engineering</h3>
+              <!-- EDIT: add your years and CGPA here, e.g.
+              <span class="edu-meta">2023 – 2027 · CGPA 8.0</span> -->
+            </div>
+            <p class="edu-school">Rewa Engineering College (RGPV)</p>
+          </li>
+
+          <li class="timeline-item card reveal">
+            <div class="edu-head">
+              <h3>Class 12 (CBSE)</h3>
+              <span class="edu-meta">2023 · 85%</span>
+            </div>
+            <p class="edu-school">Gyanasthali Vidyalaya</p>
+          </li>
+
+          <li class="timeline-item card reveal">
+            <div class="edu-head">
+              <h3>Class 10 (CBSE)</h3>
+              <span class="edu-meta">2021 · 75%</span>
+            </div>
+            <p class="edu-school">Gyanasthali Vidyalaya</p>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- =================================================================
+         SKILLS
+         Add a skill:    <li class="tag">New Skill</li>
+         Add a category: copy a whole <div class="card reveal"> block.
+         ================================================================= -->
+    <section id="skills">
+      <div class="container">
+        <p class="eyebrow">03 / skills</p>
+        <h2 class="section-title">Skills</h2>
+
+        <div class="skills-grid">
+          <div class="card reveal">
+            <h3>Frontend</h3>
+            <ul class="tags">
+              <li class="tag">Angular</li>
+              <li class="tag">HTML</li>
+              <li class="tag">CSS</li>
+              <li class="tag">JavaScript</li>
+            </ul>
+          </div>
+
+          <div class="card reveal">
+            <h3>Backend</h3>
+            <ul class="tags">
+              <li class="tag">Spring Boot</li>
+            </ul>
+          </div>
+
+          <div class="card reveal">
+            <h3>Database</h3>
+            <ul class="tags">
+              <li class="tag">MySQL</li>
+            </ul>
+          </div>
+
+          <div class="card reveal">
+            <h3>Tools</h3>
+            <ul class="tags">
+              <li class="tag">MATLAB</li>
+              <li class="tag">Git</li>
+              <li class="tag">VS Code</li>
+            </ul>
+          </div>
+
+          <div class="card reveal">
+            <h3>Soft skills</h3>
+            <ul class="tags">
+              <li class="tag">Communication</li>
+              <li class="tag">Analytical Thinking</li>
+              <li class="tag">Critical Thinking</li>
+              <li class="tag">Leadership</li>
+              <li class="tag">Team Management</li>
+            </ul>
+          </div>
+
+          <!-- MOBILE / IoT category: fill in and remove the comment markers.
+          <div class="card reveal">
+            <h3>Mobile / IoT</h3>
+            <ul class="tags">
+              <li class="tag">Arduino</li>
+            </ul>
+          </div>
+          -->
+        </div>
+      </div>
+    </section>
+
+    <!-- =================================================================
+         PROJECTS
+         Copy an <article> block to add a project. The descriptions below are
+         general starters: edit them to say what YOU built and your role.
+         To add a link, un-comment the "project-link" line in a card.
+         ================================================================= -->
+    <section id="projects">
+      <div class="container">
+        <p class="eyebrow">04 / projects</p>
+        <h2 class="section-title">Projects</h2>
+
+        <div class="projects-grid">
+          <article class="card project reveal">
+            <span class="project-num">01</span>
+            <h3>Li-Fi Data Transmission</h3>
+            <p>
+              A Li-Fi (Light Fidelity) system that sends data wirelessly using
+              light instead of radio waves: a light source is modulated at the
+              transmitter and a light sensor recovers the signal at the receiver.
+            </p>
+            <ul class="tags">
+              <li class="tag tag-mono">Li-Fi</li>
+              <li class="tag tag-mono">Optical Wireless</li>
+            </ul>
+            <!-- <a class="project-link" href="https://github.com/your-username/your-repo" target="_blank" rel="noopener">View project →</a> -->
+          </article>
+
+          <article class="card project reveal">
+            <span class="project-num">02 · Major project</span>
+            <h3>Active Noise Cancellation (FxLMS)</h3>
+            <p>
+              An active noise cancellation system built in MATLAB using the
+              Filtered-x LMS adaptive algorithm, which continuously generates an
+              anti-noise signal to cancel unwanted sound.
+            </p>
+            <ul class="tags">
+              <li class="tag tag-mono">MATLAB</li>
+              <li class="tag tag-mono">FxLMS</li>
+              <li class="tag tag-mono">Adaptive Filtering</li>
+            </ul>
+            <!-- <a class="project-link" href="#" target="_blank" rel="noopener">View project →</a> -->
+          </article>
+
+          <article class="card project reveal">
+            <span class="project-num">03</span>
+            <h3>Sobel Edge Detection</h3>
+            <p>
+              An implementation of the Sobel operator, which computes horizontal
+              and vertical intensity gradients across an image to highlight the
+              edges of objects in it.
+            </p>
+            <ul class="tags">
+              <li class="tag tag-mono">Image Processing</li>
+              <li class="tag tag-mono">Sobel Operator</li>
+            </ul>
+            <!-- <a class="project-link" href="#" target="_blank" rel="noopener">View project →</a> -->
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- =================================================================
+         HOBBIES & INTERESTS
+         Change the emoji and the text freely; copy a block to add more.
+         ================================================================= -->
+    <section id="interests">
+      <div class="container">
+        <p class="eyebrow">05 / interests</p>
+        <h2 class="section-title">Hobbies &amp; interests</h2>
+
+        <div class="interests-grid">
+          <div class="card interest reveal">
+            <div class="interest-icon" aria-hidden="true">📚</div>
+            <h3>Self-help books</h3>
+          </div>
+          <div class="card interest reveal">
+            <div class="interest-icon" aria-hidden="true">🎧</div>
+            <h3>Podcasts</h3>
+          </div>
+          <div class="card interest reveal">
+            <div class="interest-icon" aria-hidden="true">🧠</div>
+            <h3>Psychology</h3>
+          </div>
+          <div class="card interest reveal">
+            <div class="interest-icon" aria-hidden="true">📈</div>
+            <h3>Stock market</h3>
+          </div>
+          <div class="card interest reveal">
+            <div class="interest-icon" aria-hidden="true">🤖</div>
+            <h3>AI projects</h3>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =================================================================
+         CONTACT
+         ================================================================= -->
+    <section id="contact">
+      <div class="container">
+        <p class="eyebrow">06 / contact</p>
+        <h2 class="section-title">Get in touch</h2>
+
+        <div class="contact-grid">
+          <div class="reveal">
+            <p class="contact-lead">
+              Have an opportunity, a project idea, or just want to say hello?
+              Send me a message.
+            </p>
+            <ul class="contact-list">
+              <li>
+                <a href="mailto:rishabhtiwari2006@gmail.com">
+                  <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg></span>
+                  rishabhtiwari2006@gmail.com
+                </a>
+              </li>
+              <li>
+                <a href="tel:+917067148374">
+                  <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h4l2 5-2.500 1.500a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z"/></svg></span>
+                  +91 70671 48374
+                </a>
+              </li>
+              <li>
+                <span class="row">
+                  <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-6.200-7-11a7 7 0 0 1 14 0c0 4.800-7 11-7 11z"/><circle cx="12" cy="10" r="2.500"/></svg></span>
+                  Rewa, Madhya Pradesh, India
+                </span>
+              </li>
+            </ul>
+          </div>
+
+          <!-- CONTACT FORM (frontend only)
+               There is no server: pressing "Send" opens the visitor's email app
+               with the message filled in. To receive messages directly instead,
+               sign up for a form service such as Formspree and follow the note
+               in the script at the bottom ("CONTACT FORM"). -->
+          <form class="card form-card reveal" id="contactForm">
+            <label>Your name
+              <input type="text" name="name" autocomplete="name" required />
+            </label>
+            <label>Your email
+              <input type="email" name="email" autocomplete="email" required />
+            </label>
+            <label>Message
+              <textarea name="message" required></textarea>
+            </label>
+            <button class="btn btn-primary" type="submit">Send message</button>
+            <p class="form-note">This opens your email app with the message ready to send.</p>
+          </form>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ===================================================================
+       FOOTER
+       =================================================================== -->
+  <footer>
+    <div class="container footer-inner">
+      <p>© <span id="year"></span> Rishabh Tiwari</p>
+
+      <div class="socials">
+        <a class="icon-btn" href="mailto:rishabhtiwari2006@gmail.com" aria-label="Email">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg>
+        </a>
+        <a class="icon-btn" href="tel:+917067148374" aria-label="Phone">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h4l2 5-2.500 1.500a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z"/></svg>
+        </a>
+
+        <!-- LINKEDIN / GITHUB: add your profile URLs, then remove the comment markers.
+        <a class="icon-btn" href="https://www.linkedin.com/in/your-username" target="_blank" rel="noopener" aria-label="LinkedIn">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M4.980 3.500a2.500 2.500 0 1 1 0 5 2.500 2.500 0 0 1 0-5zM3 9.750h4V21H3zM9.500 9.750h3.800v1.600h.1c.500-1 1.900-1.900 3.800-1.900 4 0 4.800 2.500 4.800 5.900V21h-4v-5c0-1.200 0-2.800-1.800-2.800s-2 1.300-2 2.700V21h-4z"/></svg>
+        </a>
+        <a class="icon-btn" href="https://github.com/your-username" target="_blank" rel="noopener" aria-label="GitHub">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 0 0-3.160 19.490c.500.090.680-.220.680-.480v-1.700c-2.780.600-3.370-1.340-3.370-1.340-.450-1.160-1.110-1.470-1.110-1.470-.910-.620.070-.610.070-.610 1 .070 1.530 1.030 1.530 1.030.900 1.530 2.340 1.090 2.910.830.090-.650.350-1.090.630-1.340-2.220-.250-4.560-1.110-4.560-4.940 0-1.090.390-1.980 1.030-2.680-.100-.250-.450-1.270.100-2.650 0 0 .840-.270 2.750 1.020a9.560 9.560 0 0 1 5 0c1.910-1.290 2.750-1.020 2.750-1.020.550 1.380.200 2.400.100 2.650.640.700 1.030 1.590 1.030 2.680 0 3.840-2.340 4.680-4.570 4.930.360.310.680.920.680 1.850v2.740c0 .270.180.580.690.480A10 10 0 0 0 12 2z"/></svg>
+        </a>
+        -->
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    /* ===================================================================
+       THEME TOGGLE: flips light/dark and remembers the choice
+       =================================================================== */
+    var root = document.documentElement;
+    document.getElementById('themeToggle').addEventListener('click', function () {
+      var next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+      root.setAttribute('data-theme', next);
+      try { localStorage.setItem('theme', next); } catch (e) {}
+    });
+
+    /* ===================================================================
+       MOBILE MENU: open/close, and close after tapping a link
+       =================================================================== */
+    var menuBtn  = document.getElementById('menuBtn');
+    var navLinks = document.getElementById('navLinks');
+
+    function setMenu(open) {
+      navLinks.classList.toggle('open', open);
+      menuBtn.setAttribute('aria-expanded', open);
+    }
+    menuBtn.addEventListener('click', function () {
+      setMenu(!navLinks.classList.contains('open'));
+    });
+    navLinks.addEventListener('click', function (e) {
+      if (e.target.tagName === 'A') setMenu(false);
+    });
+
+    /* ===================================================================
+       ACTIVE NAV LINK: highlights the section currently on screen
+       =================================================================== */
+    var links = navLinks.querySelectorAll('a');
+    var sections = document.querySelectorAll('main section[id]');
+
+    if ('IntersectionObserver' in window) {
+      var spy = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (!entry.isIntersecting) return;
+          links.forEach(function (a) {
+            a.classList.toggle('active', a.getAttribute('href') === '#' + entry.target.id);
+          });
+        });
+      }, { rootMargin: '-45% 0px -50% 0px' }); // "active" = crossing the middle of the screen
+      sections.forEach(function (s) { spy.observe(s); });
+
+      /* =================================================================
+         SCROLL REVEAL: fades in anything with class="reveal"
+         ================================================================= */
+      var revealer = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+            revealer.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.12 });
+      document.querySelectorAll('.reveal').forEach(function (el) { revealer.observe(el); });
+    } else {
+      // Very old browsers: just show everything
+      document.querySelectorAll('.reveal').forEach(function (el) { el.classList.add('visible'); });
+    }
+
+    /* ===================================================================
+       CONTACT FORM: opens the visitor's email app with the message.
+       To use Formspree instead: delete this block and change the form tag to
+       <form action="https://formspree.io/f/YOUR_ID" method="POST" ...>
+       =================================================================== */
+    document.getElementById('contactForm').addEventListener('submit', function (e) {
+      e.preventDefault();
+      var f = e.target.elements; // the form's fields, looked up by their name="..."
+      var subject = 'Portfolio message from ' + f.name.value;
+      var body = f.message.value + '\n\nFrom: ' + f.name.value + ' (' + f.email.value + ')';
+      window.location.href = 'mailto:rishabhtiwari2006@gmail.com'
+        + '?subject=' + encodeURIComponent(subject)
+        + '&body=' + encodeURIComponent(body);
+    });
+
+    /* ===================================================================
+       FOOTER YEAR: always shows the current year
+       =================================================================== */
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    /* ===================================================================
+       HERO SIGNAL: a noisy wave on the left that is "cancelled" into a
+       clean line on the right (a nod to the noise-cancellation project).
+       Delete this block and the <canvas id="signal"> to remove it.
+       =================================================================== */
+    (function () {
+      var canvas = document.getElementById('signal');
+      var ctx = canvas.getContext && canvas.getContext('2d');
+      if (!ctx) return;
+
+      var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      var w, h, dpr;
+
+      function resize() {
+        dpr = window.devicePixelRatio || 1;
+        w = canvas.clientWidth;
+        h = canvas.clientHeight;
+        canvas.width = w * dpr;
+        canvas.height = h * dpr;
+      }
+
+      function draw(time) {
+        var t = time / 1000;
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        ctx.clearRect(0, 0, w, h);
+        ctx.lineWidth = 2;
+        ctx.strokeStyle = getComputedStyle(root).getPropertyValue('--accent');
+        ctx.beginPath();
+        for (var x = 0; x <= w; x += 3) {
+          var p = x / w;                         // 0 (left) to 1 (right)
+          var fade = Math.pow(1 - p, 2.2);       // noise amplitude dies out to the right
+          var noise = Math.sin(x * 0.045 + t * 2.1)
+                    + 0.6 * Math.sin(x * 0.110 - t * 3.3)
+                    + 0.4 * Math.sin(x * 0.230 + t * 5.0);
+          var y = h / 2 + noise * fade * h * 0.22;
+          if (x === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+        }
+        ctx.stroke();
+        if (!reduceMotion) requestAnimationFrame(draw);
+      }
+
+      resize();
+      window.addEventListener('resize', function () { resize(); if (reduceMotion) draw(0); });
+      // If motion is reduced, draw() runs once and stays still; the theme
+      // toggle redraws it so the line picks up the new colour.
+      if (reduceMotion) {
+        draw(0);
+        document.getElementById('themeToggle').addEventListener('click', function () { draw(0); });
+      } else {
+        requestAnimationFrame(draw);
+      }
+    })();
+  </script>
+</body>
+</html>
