@@ -839,9 +839,9 @@
        If the backend can't be reached, it opens the visitor's email app
        instead, so a message is never lost.
        =================================================================== */
-    // Where the backend lives. When you host the server online, replace this
-    // with its public address, e.g. 'https://your-app.onrender.com/contact'
-    var CONTACT_API = 'http://localhost:3000/contact';
+    // Where the backend lives (hosted on Render).
+    // To test against a server on your own computer, use 'http://localhost:3000/contact'
+    var CONTACT_API = 'https://rishabh-tiwari-labs-github-io.onrender.com/contact';
 
     document.getElementById('contactForm').addEventListener('submit', function (e) {
       e.preventDefault();
