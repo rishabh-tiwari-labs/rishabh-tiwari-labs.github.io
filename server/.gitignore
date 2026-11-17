@@ -1,0 +1,6 @@
+# Downloaded packages (recreated by "npm install")
+node_modules/
+
+# Saved contact messages: these hold visitors' names and emails,
+# so they must never be uploaded to a public GitHub repo
+messages.json

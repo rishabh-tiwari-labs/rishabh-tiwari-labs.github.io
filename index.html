@@ -721,11 +721,11 @@
             </ul>
           </div>
 
-          <!-- CONTACT FORM (frontend only)
-               There is no server: pressing "Send" opens the visitor's email app
-               with the message filled in. To receive messages directly instead,
-               sign up for a form service such as Formspree and follow the note
-               in the script at the bottom ("CONTACT FORM"). -->
+          <!-- CONTACT FORM
+               Pressing "Send" posts the message to the backend in the server/
+               folder, which saves it to server/messages.json. If the backend
+               can't be reached, it falls back to opening the visitor's email app.
+               See the script at the bottom ("CONTACT FORM"). -->
           <form class="card form-card reveal" id="contactForm">
             <label>Your name
               <input type="text" name="name" autocomplete="name" required />
@@ -737,7 +737,7 @@
               <textarea name="message" required></textarea>
             </label>
             <button class="btn btn-primary" type="submit">Send message</button>
-            <p class="form-note">This opens your email app with the message ready to send.</p>
+            <p class="form-note" id="formStatus" role="status"></p>
           </form>
         </div>
       </div>
@@ -834,18 +834,52 @@
     }
 
     /* ===================================================================
-       CONTACT FORM: opens the visitor's email app with the message.
-       To use Formspree instead: delete this block and change the form tag to
-       <form action="https://formspree.io/f/YOUR_ID" method="POST" ...>
+       CONTACT FORM: sends the message to the backend (server/server.js),
+       which saves it to server/messages.json.
+       If the backend can't be reached, it opens the visitor's email app
+       instead, so a message is never lost.
        =================================================================== */
+    // Where the backend lives. When you host the server online, replace this
+    // with its public address, e.g. 'https://your-app.onrender.com/contact'
+    var CONTACT_API = 'http://localhost:3000/contact';
+
     document.getElementById('contactForm').addEventListener('submit', function (e) {
       e.preventDefault();
-      var f = e.target.elements; // the form's fields, looked up by their name="..."
-      var subject = 'Portfolio message from ' + f.name.value;
-      var body = f.message.value + '\n\nFrom: ' + f.name.value + ' (' + f.email.value + ')';
-      window.location.href = 'mailto:rishabhtiwari2006@gmail.com'
-        + '?subject=' + encodeURIComponent(subject)
-        + '&body=' + encodeURIComponent(body);
+      var form   = e.target;
+      var f      = form.elements; // the form's fields, looked up by their name="..."
+      var button = form.querySelector('button[type="submit"]');
+      var status = document.getElementById('formStatus');
+      var data   = { name: f.name.value, email: f.email.value, message: f.message.value };
+
+      button.disabled = true;
+      status.textContent = 'Sending…';
+
+      fetch(CONTACT_API, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      })
+        .then(function (res) {
+          // The server answered: read its reply (ok: true, or an error message)
+          return res.json().then(function (reply) {
+            if (res.ok) {
+              status.textContent = 'Thanks! Your message has been sent.';
+              form.reset();
+            } else {
+              status.textContent = reply.error || 'Something went wrong. Please try again.';
+            }
+          });
+        })
+        .catch(function () {
+          // The server could not be reached at all: fall back to the email app
+          status.textContent = 'Opening your email app to send the message instead.';
+          var subject = 'Portfolio message from ' + data.name;
+          var body = data.message + '\n\nFrom: ' + data.name + ' (' + data.email + ')';
+          window.location.href = 'mailto:rishabhtiwari2006@gmail.com'
+            + '?subject=' + encodeURIComponent(subject)
+            + '&body=' + encodeURIComponent(body);
+        })
+        .then(function () { button.disabled = false; });
     });
 
     /* ===================================================================
