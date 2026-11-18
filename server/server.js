@@ -19,9 +19,11 @@ const MESSAGES_FILE = path.join(__dirname, 'messages.json');
    secret key and your address are never written in the code.
    Set them on Render under: your service -> Environment. */
 const RESEND_API_KEY = process.env.RESEND_API_KEY;
-const CONTACT_TO_EMAIL = process.env.CONTACT_TO_EMAIL;
-// The "from" address. Resend's test address works without owning a domain.
-const CONTACT_FROM_EMAIL = process.env.CONTACT_FROM_EMAIL || 'Portfolio Contact <onboarding@resend.dev>';
+// .trim() removes any space or line break pasted in by accident on Render
+const CONTACT_TO_EMAIL = (process.env.CONTACT_TO_EMAIL || '').trim();
+// The "from" address: Resend's test address, which works without owning a domain.
+// With it, Resend only delivers to the email address your Resend account was created with.
+const CONTACT_FROM_EMAIL = 'onboarding@resend.dev';
 
 /* Only these addresses are allowed to send the form to this server.
    'null' is what a browser sends when index.html is opened by double-clicking it. */
@@ -52,6 +54,9 @@ function saveMessage(entry) {
 /* Email one message to you through the Resend API (a normal HTTPS request, not SMTP).
    Throws an error if Resend refuses the request or cannot be reached. */
 async function sendEmail(entry) {
+  // Shown in the Render logs so you can check where the email is going
+  console.log('Sending email to: ' + CONTACT_TO_EMAIL);
+
   const response = await fetch('https://api.resend.com/emails', {
     method: 'POST',
     headers: {
@@ -61,7 +66,7 @@ async function sendEmail(entry) {
     body: JSON.stringify({
       from: CONTACT_FROM_EMAIL,
       to: [CONTACT_TO_EMAIL],
-      reply_to: entry.email, // pressing "Reply" in your inbox answers the visitor
+      reply_to: entry.email, // the visitor's address goes ONLY here, so "Reply" answers them
       subject: 'Portfolio message from ' + entry.name.replace(/\s+/g, ' '),
       text: entry.message + '\n\nFrom: ' + entry.name + ' (' + entry.email + ')'
     }),
